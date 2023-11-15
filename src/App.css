@@ -24,6 +24,26 @@
   color: white;
 }
 
+.scroll-container {
+  position: relative;
+  height: 100vh; /* Set a fixed height for the container */
+  overflow: hidden;
+}
+
+.scrolling-content {
+  animation: scroll 15s linear infinite alternate; 
+  position: absolute;
+  top: 0;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(-100% + 100vh));
+  }
+}
 .App-link {
   color: #61dafb;
 }
