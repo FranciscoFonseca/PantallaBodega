@@ -3,6 +3,13 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import bellSound from "../../sounds/bell.mp3";
+import voz1 from "../../sounds/nuevo-pedido-voces/voz1.mp3";
+import voz2 from "../../sounds/nuevo-pedido-voces/voz2.mp3";
+import voz3 from "../../sounds/nuevo-pedido-voces/voz3.mp3";
+import voz4 from "../../sounds/nuevo-pedido-voces/voz4.mp3";
+import voz5 from "../../sounds/nuevo-pedido-voces/voz5.mp3";
+import voz6 from "../../sounds/nuevo-pedido-voces/voz6.mp3";
+import voz7 from "../../sounds/nuevo-pedido-voces/voz7.mp3";
 interface CasaMatrizType {
   docNum: number;
   docDate: string;
@@ -33,15 +40,47 @@ class TransactionTracker {
     return this.trackedDocNums;
   }
 }
+//declare initial as caasMatrizType
+const initial: CasaMatrizType[] = [
+  {
+    docNum: 100073702,
+    docDate: "2023-11-14T00:00:00",
+    cardCode: "C0002791",
+    cardName: "CANTERAS D & B",
+    itemCode: "01-01-014-0019",
+    docEntry: 163987,
+    dscription: "Nitrato de Amonio (N) 33.5%",
+    quantity: 25,
+    whsCode: "SPS3AVEB",
+    docTotal: 14805.7575,
+    paidToDate: 14805.7575,
+    slpName: "Fulvia Azucena Najera",
+  },
+  {
+    docNum: 100073711,
+    docDate: "2023-11-16T00:00:00",
+    cardCode: "C0003148",
+    cardName: "GALILTEC",
+    itemCode: "01-01-013-0003",
+    docEntry: 164233,
+    dscription: "Osmocote 15-9-12 (5-6 meses)",
+    quantity: 1,
+    whsCode: "SPS3AVEB",
+    docTotal: 2309.2842,
+    paidToDate: 2309.2842,
+    slpName: "Fulvia Azucena Najera",
+  },
+];
 
 const CasaMatriz = () => {
-  const [casaMatriz, setCasaMatriz] = useState<CasaMatrizType[]>([]);
+  const [casaMatriz, setCasaMatriz] = useState<CasaMatrizType[]>(initial);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
-  const [play, { stop }] = useSound(bellSound);
+  const [play, { stop }] = useSound(voz7);
   const tracker = new TransactionTracker();
+  const [casaMatriz2, setCasaMatriz2] = useState<CasaMatrizType[]>(initial);
   //Add the function here
-
+  //var uniq = 'id' + (new Date()).getTime();
   const getCasaMatriz = async () => {
     try {
       setError(false);
@@ -53,9 +92,8 @@ const CasaMatriz = () => {
         const trigger = tracker.addTransaction(transaction.docNum);
         console.log("trigger", trigger);
         if (trigger) {
-          // Trigger action (e.g., play sound) here
           stop();
-          play();
+          play(); // Uncomment this if you want to play the sound
         }
       });
 
@@ -69,10 +107,11 @@ const CasaMatriz = () => {
 
   useEffect(() => {
     getCasaMatriz();
-    const intervalId = setInterval(getCasaMatriz, 15000);
+    // const intervalId = setInterval(getCasaMatriz, 100);
+     const intervalId = setInterval(getCasaMatriz, 15000);
     // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []);
+  }, [casaMatriz2]);
   const groupedCasaMatriz = casaMatriz.reduce(
     (result: Record<number, CasaMatrizType[]>, item) => {
       const docEntry = item.docEntry;
@@ -85,6 +124,29 @@ const CasaMatriz = () => {
     {}
   );
 
+  const refreshHandler = () => {
+    console.log("click");
+    var uniq = new Date().getTime();
+    setCasaMatriz2([
+      ...casaMatriz2,
+
+      {
+        docNum: uniq,
+        docDate: "2023-11-14T00:00:00",
+        cardCode: "C0002791",
+        cardName: "CANTERAS D & B",
+        itemCode: "01-01-014-0019",
+        docEntry: uniq,
+        dscription: "Nitrato de Amonio (N) 33.5%",
+        quantity: 25,
+        whsCode: "SPS3AVEB",
+        docTotal: 14805.7575,
+        paidToDate: 14805.7575,
+        slpName: "Fulvia Azucena Najera",
+      },
+    ]);
+  };
+
   // Convert the grouped data back to an array of arrays
   const groupedArray = Object.values(groupedCasaMatriz);
 
@@ -96,6 +158,9 @@ const CasaMatriz = () => {
           id="CardId"
           className="flex flex-col rounded border w-[26rem] bg-white"
           style={{ height: "100%" }}
+          onClick={() => {
+            refreshHandler();
+          }}
         >
           <div
             className="flex flex-col p-2 text-2xl gap-2"
@@ -164,8 +229,24 @@ const CasaMatriz = () => {
       }}
       className="scrolling-container" // Add a class for the background
     >
+      {/* <iframe
+        src={voz1}
+        allow="autoplay"
+        style={{ display: "none" }}
+        id="iframeAudio"
+        
+      ></iframe> */}
+      {/* ifram looping audio */}
+      <iframe
+        src={voz1}
+        allow="autoplay"
+        style={{ display: "none" }}
+        id="iframeAudio"
+      ></iframe>
+      {/* a button that on click pushes a new object on casamatriz2  */}
+
       {loading && <p>Loading...</p>}
-      {error && <p>Error</p>}
+      {error && <p>E</p>}
       {/* <button onClick={play}>Boop!</button> */}
 
       <div
